@@ -58,4 +58,10 @@ df = pd.read_csv('jonnam/bia.csv', header = None)
 df[''] = images_list
 df.to_csv('bodo.csv', index=False, header = None)
 
-dff = pd.read_csv('bodo.csv', header = None)
+headers = ['joint', 'label', 'image_fn']
+
+df.to_csv("bodo.csv", header=headers, index=False)
+
+
+dff = pd.read_csv('bodo.csv')
+
