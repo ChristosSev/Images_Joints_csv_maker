@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from glob import glob
 import os
+import torchvision
 from torchvision import transforms
 import pandas as pd
 from skimage import io, transform
@@ -13,27 +14,20 @@ from torchvision import transforms, utils
 import matplotlib as plt
 from PIL import Image
 import torch
-import torchvision.transforms as transforms
-import torchvision
-from torch.utils.data import DataLoader, Dataset
-import cv2
-
-
-from sklearn.model_selection import train_test_split
 
 
 #Creating the folders for positive and negative
-positive_set= 'positive_set' + os.sep
+positive_set= 'positive_set_her_3' + os.sep
 if not os.path.exists(positive_set):
-    print("It doesnt exist!")
+    print("Positive set is to be created")
     os.makedirs(positive_set)
 
-negative_set= 'negative_set' + os.sep
+negative_set= 'negative_set_her_3' + os.sep
 if not os.path.exists(negative_set):
-    print("It doesnt exist!")
+    print("negatve set is to be created")
     os.makedirs(negative_set)
 
-df = pd.read_csv('bodo.csv')
+df = pd.read_csv('final_her.csv')
 
 positive = df[df["label"] == 1]
 list_positive = (positive['image_fn']).tolist()
@@ -42,13 +36,14 @@ list_positive = (positive['image_fn']).tolist()
 
 negative = df[df["label"] == 0]
 list_negative = (negative['image_fn']).tolist()
+print(len(list_negative))
 
 
-source_folder = '/home/christos_sevastopoulos/Desktop/Extracted_Data/heracleia/img/'
-destination_folder = positive_set
+# source_folder = '/home/christos_sevastopoulos/Desktop/berdematex/Extracted_Data/heracleia/img/'
+# destination_folder = positive_set
 
 
-path_img = '/home/christos_sevastopoulos/Desktop/Extracted_Data/heracleia/img/'
+path_img = '/home/christos_sevastopoulos/Desktop/berdematex/Extracted_Data/heracleia2/img/'
 images =  glob(path_img + '*jpg')
 images_list = []
 for i in images:
@@ -63,21 +58,21 @@ for i in images:
 images_list = [eval(i) for i in images_list]
 
 
-source_folder = r"/home/christos_sevastopoulos/Desktop/Extracted_Data/heracleia/img/"
-destination_folder_positive = r"/home/christos_sevastopoulos/PycharmProjects/GAN/positive_set/"
-destination_folder_negative = r"/home/christos_sevastopoulos/PycharmProjects/GAN/negative_set/"
+source_folder = r"/home/christos_sevastopoulos/Desktop/berdematex/Extracted_Data/heracleia2/img/"
+destination_folder_positive = r"/home/christos_sevastopoulos/PycharmProjects/GAN/positive_set_her_3/"
+destination_folder_negative = r"/home/christos_sevastopoulos/PycharmProjects/GAN/negative_set_her_3/"
 
 
 import shutil
 
 for i in images_list:
     source = source_folder + str(i) + '.jpg'
-    destination = destination_folder
+    #destination = destination_folder
 
     if i in list_positive:
-        shutil.move(source,destination_folder_positive)
+        shutil.copy(source,destination_folder_positive)
     elif i in list_negative:
-        shutil.move(source,destination_folder_negative)
+        shutil.copy(source,destination_folder_negative)
+        #print("Negative")
     else:
         print("Error!")
-
