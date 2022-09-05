@@ -8,7 +8,7 @@ import numpy as np
 import argparse
 import matplotlib.pyplot as plt
 from pathlib import Path
-
+import shutil
 
 #### Parsing the arguments
 parser = argparse.ArgumentParser()
@@ -17,6 +17,7 @@ parser.add_argument('--path_to_joints',metavar='path_to_joints',  default='', ty
 parser.add_argument('--path_to_images',metavar='path_to_img',  default='', type=str, help='Path of the images set')
 parser.add_argument('--csv_name',metavar='csv_name',  default='csv_name', type=str, help='name of the csv ')
 parser.add_argument('--threshold',metavar='threshold',   type=float, help='value for threshold ')
+parser.add_argument('--dataset_name',metavar='dataset_name',default='new', type=str, help=' dataset_name')
 
 args= parser.parse_args()
 
@@ -24,6 +25,7 @@ path_joint = args.path_to_joints
 path_img = args.path_to_images
 csv_name = args.csv_name
 threshold = args.threshold
+dataset_name = args.dataset_name
 
 
 #Creating list for scans and images#
@@ -118,6 +120,46 @@ headers = ['joint', 'label', 'image_fn']
 ### appending the images
 df[''] = images_list
 
-
 df.to_csv(output_path + csv_name+ '_final'+ '.csv', index=False, header=headers)
 
+
+#Creating the folders for positive and negative
+positive_set= 'positive_set_' + dataset_name + os.sep
+if not os.path.exists(positive_set):
+    print("Positive set is to be created")
+    os.makedirs(positive_set)
+
+negative_set= 'negative_set_' + dataset_name+ os.sep
+if not os.path.exists(negative_set):
+    print("negative set is to be created")
+    os.makedirs(negative_set)
+
+df = pd.read_csv('csv_outputs/' +csv_name + '_final' + '.csv' )
+
+positive = df[df["label"] == 1]
+list_positive = (positive['image_fn']).tolist()
+
+print(len(list_positive))
+
+negative = df[df["label"] == 0]
+list_negative = (negative['image_fn']).tolist()
+print(len(list_negative))
+
+images_list = [eval(i) for i in images_list]
+print(len(images_list))
+
+source_folder = path_img
+destination_folder_positive = positive_set
+destination_folder_negative = negative_set
+
+##### Fill the folders with positive and negative data ######
+for i in images_list:
+    source = source_folder + str(i) + '.jpg'
+    #destination = destination_folder
+
+    if i in list_positive:
+        shutil.copy(source,destination_folder_positive)
+    elif i in list_negative:
+        shutil.copy(source,destination_folder_negative)
+    else:
+        print("Undecided")
