@@ -9,6 +9,7 @@ import argparse
 import matplotlib.pyplot as plt
 from pathlib import Path
 import shutil
+import splitfolders
 
 
 #### Parsing the arguments
@@ -72,22 +73,8 @@ def label_maker(fn):   ### for hearacleia
     else:
         return 2
 
-"""
-def label_maker(fn):   #for mocap
-    if (fn[0] <= 1.5 and fn[0] > -1.5) and (fn[1] <= 1.5 and fn[1] > -1.5) and (
-            fn[2] <= 0.5 and fn[2] > -0.5) and (fn[3] <= 0.5 and fn[3] > -0.5):
-        return 0
-
-    if (fn[0] <= -1.5) and (fn[1] <= -1.5) and (fn[2] <= -1.5) and (fn[3] <= -1.5):
-        return 0
-
-    else:
-        return 1
-"""
 
 velocity_array=np.empty([1,4])
-
-
 csv_final = output_path + csv_name+ '.csv'
 
 with open(csv_final,'w') as final_file:
@@ -173,5 +160,12 @@ for i in images_list:
         shutil.copy(source,destination_folder_positive)
     elif i in list_negative:
         shutil.copy(source,destination_folder_negative)
-    else:
-        print("Undecided")
+    #else:
+        #print("Undecided")
+
+
+#Creating training and test dataset 
+
+input_folder = dataset_name
+splitfolders.ratio(input_folder, output=dataset_name,
+    seed=1337, ratio=(.8, .2), group_prefix=None, move=False) # default values
