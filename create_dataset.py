@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import shutil
 
+
 #### Parsing the arguments
 parser = argparse.ArgumentParser()
 
@@ -28,7 +29,14 @@ threshold = args.threshold
 dataset_name = args.dataset_name
 
 
+
+if not os.path.exists(dataset_name):
+    print("It doesnt exist! Lets create it ")
+    os.makedirs(dataset_name)
+
+
 #Creating list for scans and images#
+
 
 scans = glob(path_joint + '*pkl')
 scans.sort()
@@ -44,10 +52,7 @@ for i in images:
     #print(images_list)
 
 
-output_path = 'csv_outputs' + os.sep
-if not os.path.exists(output_path):
-    print("It doesnt exist!")
-    os.makedirs(output_path)
+output_path = "%s" % dataset_name + os.sep
 
 
 limit= 1.0
@@ -125,16 +130,23 @@ df.to_csv(output_path + csv_name+ '_final'+ '.csv', index=False, header=headers)
 
 #Creating the folders for positive and negative
 positive_set= 'positive_set_' + dataset_name + os.sep
+negative_set= 'negative_set_' + dataset_name+ os.sep
+positive_path = os.path.join(dataset_name, positive_set)
+negative_path = os.path.join(dataset_name, negative_set)
+
 if not os.path.exists(positive_set):
     print("Positive set is to be created")
-    os.makedirs(positive_set)
 
-negative_set= 'negative_set_' + dataset_name+ os.sep
+    os.makedirs(positive_path,exist_ok=True)
+
+
 if not os.path.exists(negative_set):
     print("negative set is to be created")
-    os.makedirs(negative_set)
+    #shutil.rmtree(dir, ignore_errors=True)
+    os.makedirs(negative_path, exist_ok=True)
 
-df = pd.read_csv('csv_outputs/' +csv_name + '_final' + '.csv' )
+
+df = pd.read_csv(dataset_name+ '/' +csv_name + '_final' + '.csv' )
 
 positive = df[df["label"] == 1]
 list_positive = (positive['image_fn']).tolist()
@@ -149,8 +161,8 @@ images_list = [eval(i) for i in images_list]
 print(len(images_list))
 
 source_folder = path_img
-destination_folder_positive = positive_set
-destination_folder_negative = negative_set
+destination_folder_positive = positive_path
+destination_folder_negative = negative_path
 
 ##### Fill the folders with positive and negative data ######
 for i in images_list:
